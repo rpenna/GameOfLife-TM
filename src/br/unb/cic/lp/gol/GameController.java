@@ -58,7 +58,8 @@ public class GameController {
 			this.engine = (Conway) context.getBean("conway");
 			break;
 		}
-		board.makeCellsAlive();
+		//board.makeCellsAlive();
+		board.update();
 	}
 	
 	public void halt() {
@@ -82,6 +83,16 @@ public class GameController {
 	
 	public boolean isCellAlive (int i, int j) {
 		return engine.isCellAlive(i, j);
+	}
+	
+	public void killCell (int i, int j) {
+		try {
+			engine.killCell(i, j);
+			//board.update();
+		}
+		catch(InvalidParameterException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public void setHeight (int h) {

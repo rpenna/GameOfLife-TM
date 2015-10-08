@@ -7,16 +7,9 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,7 +32,7 @@ public class GameViewGUI implements ActionListener{
 	private JButton ok = new JButton("Ok");
 	private int width;
 	private int height;
-	private JCheckBox[][] celulas;
+	private JButton[][] celulas;
 	
 	public GameViewGUI(GameController controller) {
 		this.controller = controller;
@@ -90,7 +83,7 @@ public class GameViewGUI implements ActionListener{
 		modeSelect.setLocationRelativeTo(null);  // Abre a janela no centro da tela
 	}
 	
-	public void makeCellsAlive () {
+	/*public void makeCellsAlive () {
 		int i, j;
 		Container border, grid, flow;
 
@@ -131,70 +124,59 @@ public class GameViewGUI implements ActionListener{
 		cellsSelection.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		cellsSelection.setVisible(true);
 		cellsSelection.setLocationRelativeTo(null);
-	}
+	}*/
 	
 	public void update () {
 		int i, j;
 		Container border, grid, flow;
-		BufferedImage caveira;
-		BufferedImage lifeUp;
+
 		
-		try {
-			caveira = ImageIO.read(new File(new File(".").getCanonicalPath() + 
-					"\\src\\resources\\caveira.GIF"));
-			lifeUp = ImageIO.read(new File(new File(".").getCanonicalPath() + 
-					"\\src\\resources\\lifeUp.GIF"));
+		this.width = controller.getWidth();
+		this.height = controller.getHeight();
+		celulas = new JButton[this.width][this.height];
 		
-			border = gameTable.getContentPane();
-		
-			grid = new JPanel();
-			grid.setLayout(new GridLayout(height + 1, width + 1));
-			grid.add(new JLabel());
-			for (i = 1; i < width + 1; i++) {
-				grid.add(new JLabel("      " + Integer.toString(i)));
-			}
-			for (i = 0; i < this.height; i++) {
-				for (j = 0; j < this.width; j++) {
-					if (j == 0) {
-						grid.add(new JLabel("      " + Integer.toString(i + 1)));
-					}
-					if (controller.isCellAlive(i, j)) {
-						grid.add(new JLabel(new ImageIcon (lifeUp)));
-					}
-					else {
-						grid.add(new JLabel(new ImageIcon (caveira)));
-					}
+		border = gameTable.getContentPane();
+
+		grid = new JPanel();
+		grid.setLayout(new GridLayout(height + 1, width + 1));
+		grid.add(new JLabel());
+		for (i = 0; i < this.height; i++) {
+			for (j = 0; j < this.width; j++) {		
+				if (controller.isCellAlive(i, j)) {
+					celulas[i][j].setBackground(new Color (0, 255, 0));
+				} else {
+					celulas[i][j].setBackground(new Color (1, 1, 1));
 				}
+				grid.add(celulas[i][j]);
+				celulas[i][j].addActionListener(this);
 			}
-		
-			flow = new JPanel();
-			flow.setLayout(new FlowLayout());
-			next.setBackground(new Color (0, 100, 0));
-			make.setBackground(new Color (230, 230, 0));
-			halt.setBackground(new Color (255, 0, 0));
-			next.setForeground(new Color (1, 1, 1));
-			make.setForeground(new Color (1, 1, 1));
-			halt.setForeground(new Color (1, 1, 1));
-			flow.add(halt);
-			flow.add(make);
-			flow.add(next);
-		
-			make.addActionListener(this);
-			halt.addActionListener(this);
-			next.addActionListener(this);
-			
-			border.setLayout(new BorderLayout(5, 5));
-			border.add(BorderLayout.CENTER, grid);
-			border.add(BorderLayout.SOUTH, flow);
-		
-			gameTable.setSize(800, 600);
-			gameTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			gameTable.setVisible(true);
-			gameTable.setLocationRelativeTo(null);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Erro de carregamento de imagem.");
 		}
+
+		flow = new JPanel();
+		flow.setLayout(new FlowLayout());
+		next.setBackground(new Color(0, 100, 0));
+		make.setBackground(new Color(230, 230, 0));
+		halt.setBackground(new Color(255, 0, 0));
+		next.setForeground(new Color(1, 1, 1));
+		make.setForeground(new Color(1, 1, 1));
+		halt.setForeground(new Color(1, 1, 1));
+		flow.add(halt);
+		flow.add(make);
+		flow.add(next);
+
+		make.addActionListener(this);
+		halt.addActionListener(this);
+		next.addActionListener(this);
+
+		border.setLayout(new BorderLayout(5, 5));
+		border.add(BorderLayout.CENTER, grid);
+		border.add(BorderLayout.SOUTH, flow);
+
+		gameTable.setSize(800, 600);
+		gameTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		gameTable.setVisible(true);
+		gameTable.setLocationRelativeTo(null);
+
 	}
 	
 	public void showStatistics (int revived, int killed) {
@@ -234,29 +216,11 @@ public class GameViewGUI implements ActionListener{
 		gameEnd.setVisible(true);
 		gameEnd.setLocationRelativeTo(null);  // Abre a janela no centro da tela
 	}
-
-	public class CheckListener implements ItemListener {
-
-		/**
-		* Método que de fato verifica quais quadrados foram selecionados.
-		* 
-		*  @param E ItemEvent
-		*/
-		@Override
-		public void itemStateChanged(ItemEvent E) {
-			int i, j;
-			for (i = 0; i < height; i++) {
-				for (j = 0; j < width; j++) {
-					if (celulas[i][j].isSelected()) {
-						controller.makeCellAlive(i, j);
-					}
-				}
-			}
-		}
-	}
 	
 	@Override
 	public void actionPerformed(ActionEvent evento) {
+		int i, j;
+		
 		if (evento.getSource() == conway) {
 			modeSelect.dispose();
 			controller.selectRule(4);
@@ -279,7 +243,7 @@ public class GameViewGUI implements ActionListener{
 		}
 		else if (evento.getSource() == make){
 			gameTable.dispose();
-			makeCellsAlive();
+			//makeCellsAlive();
 		}
 		else if (evento.getSource() == next){
 			gameTable.dispose();
@@ -289,9 +253,24 @@ public class GameViewGUI implements ActionListener{
 			gameTable.dispose();
 			controller.halt();
 		}
-		else { // End of the game
-			gameEnd.dispose();
+		else if (evento.getSource() == finish){ // End of the game
+			gameTable.dispose();
 			System.exit(0);
+		}
+		else { // Make a cell alive
+			for (i = 0; i < this.height; i++) {
+				for (j = 0; j < this.width; j++) {
+					if (evento.getSource() == celulas[i][j]) {
+						if (controller.isCellAlive(i, j)) {
+							controller.killCell(i, j);
+							celulas[i][j].setBackground(new Color (0, 0, 0));
+						} else {
+							controller.makeCellAlive(i, j);	
+							celulas[i][j].setBackground(new Color (0, 255, 0));
+						}
+					}
+				}
+			}
 		}
 	}
 }
