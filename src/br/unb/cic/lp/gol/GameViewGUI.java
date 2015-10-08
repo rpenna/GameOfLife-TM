@@ -138,10 +138,10 @@ public class GameViewGUI implements ActionListener{
 		border = gameTable.getContentPane();
 
 		grid = new JPanel();
-		grid.setLayout(new GridLayout(height + 1, width + 1));
-		grid.add(new JLabel());
+		grid.setLayout(new GridLayout(height, width));
 		for (i = 0; i < this.height; i++) {
 			for (j = 0; j < this.width; j++) {		
+				celulas[i][j] = new JButton();
 				if (controller.isCellAlive(i, j)) {
 					celulas[i][j].setBackground(new Color (0, 255, 0));
 				} else {
