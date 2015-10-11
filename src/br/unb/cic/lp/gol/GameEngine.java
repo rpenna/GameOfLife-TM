@@ -100,6 +100,23 @@ public abstract class GameEngine {
 	}
 	
 	/**
+	 * Torna a celula de posicao (i, j) morta
+	 * 
+	 * @param i posicao vertical da celula
+	 * @param j posicao horizontal da celula
+	 * 
+	 * @throws InvalidParameterException caso a posicao (i, j) nao seja valida.
+	 */
+	public void killCell(int i, int j) throws InvalidParameterException {
+		if(validPosition(i, j)) {
+			cells[i][j].kill();
+		}
+		else {
+			new InvalidParameterException("Invalid position (" + i + ", " + j + ")" );
+		}
+	}
+	
+	/**
 	 * Verifica se uma celula na posicao (i, j) estah viva.
 	 * 
 	 * @param i Posicao vertical da celula
