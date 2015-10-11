@@ -25,7 +25,6 @@ public class GameViewGUI implements ActionListener{
 	private JButton highlife = new JButton("HighLife");
 	private JButton liveFreeOrDie = new JButton ("Live Free Or Die");
 	private JButton ameba = new JButton ("Ameba");
-	private JButton make = new JButton("Make Cell Alive");
 	private JButton next = new JButton("Next Generation");
 	private JButton halt = new JButton("Halt");
 	private JButton finish = new JButton("Finish");
@@ -33,6 +32,7 @@ public class GameViewGUI implements ActionListener{
 	private int width;
 	private int height;
 	private JButton[][] celulas;
+	private Container border, grid, flow;
 	
 	public GameViewGUI(GameController controller) {
 		this.controller = controller;
@@ -47,13 +47,13 @@ public class GameViewGUI implements ActionListener{
 	}
 	
 	public void selectMode () {
-		Container janela, flow1, flow2, flow;
+		Container janela, flow1, flow2, flow3;
 		JLabel texto = new JLabel();
 
 		janela = modeSelect.getContentPane();
 
-		flow = new JPanel();
-		flow.setLayout(new FlowLayout ());
+		flow3 = new JPanel();
+		flow3.setLayout(new FlowLayout ());
 		
 		flow1 = new JPanel();
 		flow1.setLayout(new FlowLayout ());
@@ -73,7 +73,7 @@ public class GameViewGUI implements ActionListener{
 		ameba.addActionListener(this);
 		
 		janela.setLayout(new GridLayout(3, 1));
-		janela.add (flow);
+		janela.add (flow3);
 		janela.add (flow1);
 		janela.add (flow2);
 		
@@ -83,60 +83,16 @@ public class GameViewGUI implements ActionListener{
 		modeSelect.setLocationRelativeTo(null);  // Abre a janela no centro da tela
 	}
 	
-	/*public void makeCellsAlive () {
-		int i, j;
-		Container border, grid, flow;
 
-		this.width = controller.getWidth();
-		this.height = controller.getHeight();
-		
-		celulas = new JCheckBox[this.width][this.height];
-		border = cellsSelection.getContentPane();
-		
-		grid = new JPanel();
-		grid.setLayout(new GridLayout(height + 1, width + 1));
-		grid.add(new JLabel());
-		for (i = 1; i < width + 1; i++) {
-			grid.add(new JLabel(Integer.toString(i)));
-		}
-		for (i = 0; i < height; i++) {
-			for (j = 0; j < width; j++) {	
-				if (j == 0) {
-					grid.add(new JLabel(Integer.toString(i + 1)));
-				}
-				celulas[i][j] = new JCheckBox();
-				celulas[i][j].addItemListener(new CheckListener());
-				grid.add(celulas[i][j]);
-			}
-		}
-		
-		flow = new JPanel();
-		flow.setLayout(new FlowLayout());
-		flow.add(ok);
-		
-		ok.addActionListener(this);
-		
-		border.setLayout(new BorderLayout(5, 5));
-		border.add(BorderLayout.CENTER, grid);
-		border.add(BorderLayout.SOUTH, flow);
-		
-		cellsSelection.setSize(800, 600);
-		cellsSelection.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		cellsSelection.setVisible(true);
-		cellsSelection.setLocationRelativeTo(null);
-	}*/
-	
-	public void update () {
+	public void setTable() {
 		int i, j;
-		Container border, grid, flow;
-
 		
 		this.width = controller.getWidth();
 		this.height = controller.getHeight();
 		celulas = new JButton[this.width][this.height];
 		
 		border = gameTable.getContentPane();
-
+		
 		grid = new JPanel();
 		grid.setLayout(new GridLayout(height, width));
 		for (i = 0; i < this.height; i++) {
@@ -151,20 +107,16 @@ public class GameViewGUI implements ActionListener{
 				celulas[i][j].addActionListener(this);
 			}
 		}
-
+		
 		flow = new JPanel();
 		flow.setLayout(new FlowLayout());
 		next.setBackground(new Color(0, 100, 0));
-		make.setBackground(new Color(230, 230, 0));
 		halt.setBackground(new Color(255, 0, 0));
 		next.setForeground(new Color(1, 1, 1));
-		make.setForeground(new Color(1, 1, 1));
 		halt.setForeground(new Color(1, 1, 1));
 		flow.add(halt);
-		flow.add(make);
 		flow.add(next);
 
-		make.addActionListener(this);
 		halt.addActionListener(this);
 		next.addActionListener(this);
 
@@ -176,6 +128,24 @@ public class GameViewGUI implements ActionListener{
 		gameTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gameTable.setVisible(true);
 		gameTable.setLocationRelativeTo(null);
+
+	}
+	
+	public void update () {
+		int i, j;
+
+		for (i = 0; i < this.height; i++) {
+			for (j = 0; j < this.width; j++) {		
+				if (controller.isCellAlive(i, j)) {
+					celulas[i][j].setBackground(new Color (0, 255, 0));
+				} else {
+					celulas[i][j].setBackground(new Color (1, 1, 1));
+				}
+				grid.add(celulas[i][j]);
+				celulas[i][j].addActionListener(this);
+			}
+		}
+		grid.revalidate();
 
 	}
 	
@@ -241,12 +211,7 @@ public class GameViewGUI implements ActionListener{
 			cellsSelection.dispose();
 			controller.nextGeneration();
 		}
-		else if (evento.getSource() == make){
-			gameTable.dispose();
-			//makeCellsAlive();
-		}
 		else if (evento.getSource() == next){
-			gameTable.dispose();
 			controller.nextGeneration();
 		}
 		else if (evento.getSource() == halt){ // Halt
@@ -271,6 +236,7 @@ public class GameViewGUI implements ActionListener{
 					}
 				}
 			}
+			grid.revalidate();
 		}
 	}
 }

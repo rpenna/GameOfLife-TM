@@ -36,7 +36,7 @@ public class GameController {
 	}
 	
 	public void setStatistics(Statistics statistics) {
-		this.statistics = statistics;
+		this.statistics = (Statistics) context.getBean("statistics");
 	}
 	
 	public void start() {
@@ -58,8 +58,8 @@ public class GameController {
 			this.engine = (Conway) context.getBean("conway");
 			break;
 		}
-		//board.makeCellsAlive();
-		board.update();
+
+		board.setTable();
 	}
 	
 	public void halt() {
